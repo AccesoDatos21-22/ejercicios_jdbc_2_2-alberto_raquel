@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="dbms">sqlite</entry>
+  <entry key="driver">sqlite::memory</entry>
+  <entry key="database_name">libreria</entry>
+  <entry key="user_name">sa</entry>
+  <entry key="password"></entry>
+  <entry key="server_name">localhost</entry>
+  <entry key="port_number">3306</entry>
+
+</properties>
