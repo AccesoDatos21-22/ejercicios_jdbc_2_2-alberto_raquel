@@ -19,6 +19,7 @@ public class Libros {
     private Statement stmt;
     private ResultSet rs;
     private PreparedStatement pstmt;
+    private ArrayList<Libro> listalibros= new ArrayList<Libro>();
 
 
     // Consultas a realizar en BD
@@ -36,6 +37,7 @@ public class Libros {
     private static final String VER_CATALOGO = "SELECT * FROM libros";
     private static final String ACTUALIZAR_COPIAS = "UPDATE libros SET copias=100 WHERE libros.isbn = ?";
     private static final String BORRAR_LIBRO = "DELETE from libros WHERE libros.titulo = ?";
+
     /**
      * Constructor: inicializa conexión
      */
@@ -92,9 +94,11 @@ public class Libros {
             //Al cerrar un stmt se cierran los resultset asociados. Podíamos omitir el primer if. Lo dejamos por claridad.
             if (rs != null) {
                 rs.close();
+                rs = null;
             }
             if (stmt != null) {
                 stmt.close();
+                stmt = null;
             }
             if (pstmt != null) {
                 pstmt.close();
@@ -115,9 +119,6 @@ public class Libros {
      */
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-        String sentencia= "SELECT * FROM libros;";
-        ArrayList<Libro> listalibros= new ArrayList<Libro>();
-
 
         /* Sentencia sql */
         stmt = null;
@@ -142,7 +143,7 @@ public class Libros {
 
                 listalibros.add(new Libro(isbn,titulo,autor,editorial,paginas,copias));
             }
-
+            return listalibros;
 
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
@@ -154,7 +155,6 @@ public class Libros {
                 liberar();
 
         }
-        return listalibros;
 
     }
 
@@ -368,12 +368,9 @@ public class Libros {
 
     public boolean crearTablaLibros() throws SQLException {
 
-        String sentencia = "create table libros(isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
-                "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn))";
-
         if (stmt == null)
             stmt = con.createStatement();
-        stmt.execute(sentencia);
+        stmt.execute(CREATE_LIBROS);
         liberar();
         return true;
     }
@@ -428,4 +425,48 @@ public class Libros {
         }
 
     }
+
+    /**
+     * Debes utilizar la misma consulta que ya tienes para mostrar el catálogo en orden alfabético.
+     * Resuélvelo utilizando un tipo adecuado de Resultset y los métodos vistos en clase de esta interfaz.
+     * (Con insensitive y concur updatable)
+     * @throws AccesoDatosException
+     * @return
+     */
+    public void verCatalogoInverso() throws AccesoDatosException{
+
+        try {
+
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            // Creación de la sentencia
+           // stmt = con.createStatement();
+            // Ejecución de la consulta y obtención de resultados en un
+            // ResultSet
+            rs = stmt.executeQuery(VER_CATALOGO);
+            rs.afterLast();
+
+            // Recuperación de los datos del ResultSet
+            while (rs.previous()) {
+                int isbn= rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                Libro l1 = new Libro(isbn, titulo, autor, editorial, paginas, copias);
+                System.out.println(l1);
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            // System.err.println(sqle.getMessage());
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            liberar();
+        }
+
+    }
+
 }
