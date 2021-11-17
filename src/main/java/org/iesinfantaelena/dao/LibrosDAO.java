@@ -4,6 +4,7 @@ import org.iesinfantaelena.modelo.AccesoDatosException;
 import org.iesinfantaelena.modelo.Libro;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface LibrosDAO {
@@ -27,4 +28,7 @@ public interface LibrosDAO {
     public boolean crearTablaLibros() throws SQLException;
 
     public void librosporEditorial(String editorial) throws AccesoDatosException;
+
+    public ArrayList<Libro> verCatalogoInverso() throws AccesoDatosException;
+
 }

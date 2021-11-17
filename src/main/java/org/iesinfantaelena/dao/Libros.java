@@ -28,7 +28,7 @@ public class Libros {
     private static final String DELETE_LIBROS_QUERY = "delete from libros WHERE isbn = ?";
     private static final String CREATE_TABLE_LIBROS ="create table if not exists libros (   isbn integer not null,titulo varchar(50) not null,autor varchar(50) not null,editorial varchar(25) not null,paginas integer not null,copias integer not null,constraint isbn_pk primary key (isbn));";
     private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
-    private static final String CREATE_LIBROS=" create table IF NOT EXISTS libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
+    private static final String CREATE_LIBROS=" create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
             "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
 
     private static final String INSERT_LIBRO_QUERY="INSERT INTO libros VALUES (?,?,?,?,?,?)";
@@ -247,6 +247,7 @@ public class Libros {
 
         pstmt=null;
         try {
+            pstmt=con.prepareStatement(CREATE_LIBROS);
             pstmt= con.prepareStatement(INSERT_LIBRO_QUERY);
 
             pstmt.setInt(1,libro.getISBN());
@@ -411,12 +412,9 @@ public class Libros {
 
     public boolean crearTablaLibros() throws SQLException {
 
-        String sentencia = "create table libros(isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
-                "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn))";
-
         if (stmt == null)
             stmt = con.createStatement();
-        stmt.execute(sentencia);
+        stmt.execute(CREATE_LIBROS);
         liberar();
         return true;
     }
