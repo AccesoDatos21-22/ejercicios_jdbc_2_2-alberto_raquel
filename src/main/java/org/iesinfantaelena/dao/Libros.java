@@ -28,7 +28,7 @@ public class Libros {
     private static final String DELETE_LIBROS_QUERY = "delete from libros WHERE isbn = ?";
     private static final String CREATE_TABLE_LIBROS ="create table if not exists libros (   isbn integer not null,titulo varchar(50) not null,autor varchar(50) not null,editorial varchar(25) not null,paginas integer not null,copias integer not null,constraint isbn_pk primary key (isbn));";
     private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
-    private static final String CREATE_LIBROS=" create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
+    private static final String CREATE_LIBROS=" create table IF NOT EXISTS libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
             "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
 
     private static final String INSERT_LIBRO_QUERY="INSERT INTO libros VALUES (?,?,?,?,?,?)";
@@ -115,7 +115,6 @@ public class Libros {
      */
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-        String sentencia= "SELECT * FROM libros;";
         ArrayList<Libro> listalibros= new ArrayList<Libro>();
 
 
@@ -155,6 +154,51 @@ public class Libros {
 
         }
         return listalibros;
+
+    }
+
+    public void verCatalogoInverso() throws AccesoDatosException {
+
+        /* Sentencia sql */
+        stmt = null;
+        /* Conjunto de Resultados a obtener de la sentencia sql */
+        rs = null;
+
+        try {
+            // Creación de la sentencia
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            // Ejecución de la consulta y obtención de resultados en un
+            // ResultSet
+            rs = stmt.executeQuery(VER_CATALOGO);
+            rs.afterLast();
+
+            // Recuperación de los datos del ResultSet
+            System.out.println("fuera");
+            while (rs.previous()) {
+                System.out.println("dentro");
+                int isbn= rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+
+                Libro libroa= new Libro (isbn,titulo,autor,editorial,paginas,copias);
+
+                System.out.println(libroa);
+            }
+
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            // System.err.println(sqle.getMessage());
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            liberar();
+
+        }
 
     }
 
@@ -203,7 +247,6 @@ public class Libros {
 
         pstmt=null;
         try {
-            pstmt=con.prepareStatement(CREATE_LIBROS);
             pstmt= con.prepareStatement(INSERT_LIBRO_QUERY);
 
             pstmt.setInt(1,libro.getISBN());
