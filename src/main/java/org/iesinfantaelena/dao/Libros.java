@@ -428,4 +428,96 @@ public class Libros {
         }
 
     }
+    
+    /**
+     * Debes utilizar la misma consulta que ya tienes para mostrar el catálogo en orden alfabético.
+     * Resuélvelo utilizando un tipo adecuado de Resultset y los métodos vistos en clase de esta interfaz.
+     * (Con insensitive y concur updatable)
+     * @throws AccesoDatosException
+     * @return
+     */
+    public void verCatalogoInverso() throws AccesoDatosException{
+
+        try {
+
+            Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            // Creación de la sentencia
+           // stmt = con.createStatement();
+            // Ejecución de la consulta y obtención de resultados en un
+            // ResultSet
+            rs = stmt.executeQuery(VER_CATALOGO);
+            rs.afterLast();
+
+            // Recuperación de los datos del ResultSet
+            while (rs.previous()) {
+                int isbn= rs.getInt("isbn");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String editorial = rs.getString("editorial");
+                int paginas = rs.getInt("paginas");
+                int copias = rs.getInt("copias");
+                Libro l1 = new Libro(isbn, titulo, autor, editorial, paginas, copias);
+                System.out.println(l1);
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            // System.err.println(sqle.getMessage());
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            liberar();
+        }
+
+    }
+
+    /**
+     * Añade un nuevo método actualizarCopias de la clase Libros. Esta nueva versión recibe un Hashmap que contiene
+     * el nuevo número de copias para cada isbn.
+     *
+     *  public void actualizarCopias(HashMap<Integer, Integer> copias);
+     *
+     * Este nuevo número de copias se lo tienes que sumar al actual. Resuélvelo con la consulta SELECT_LIBROS_QUERY utilizando un tipo de ResultSet adecuado.
+     * Prueba que funciona el nuevo método en la clase con la función main.
+     */
+
+    public void actualizarCopias(HashMap<Integer, Integer> copias) throws AccesoDatosException {
+        stmt = null;
+        pstmt=null;
+
+        Libro lb = new Libro();
+        try {
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+              rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+             while (rs.next()){
+                  if(copias.containsKey(rs.getInt("isbn"))){
+                      int total = rs.getInt("copias") + copias.get(rs.getInt("isbn"));
+                     rs.updateInt("copias", total);
+                     rs.updateRow();
+                     lb.setCopias(total);
+                  }
+              }
+            System.out.println("Las copias han sido actualizadas. Total actual: " + lb.getCopias());
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
+    }
+
 }
