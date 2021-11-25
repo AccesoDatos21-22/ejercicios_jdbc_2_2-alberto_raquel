@@ -61,6 +61,12 @@ public class Main {
             System.out.println("Ejercicio 4 -->");
             libroprueba.rellenaPrecio(0.10f);
 
+
+            //Probando el ejercicio 5
+            System.out.println("Ejercicio 5 -->");
+            libroprueba.actualizaPrecio(1111, 2222, 0.15f);
+            System.out.println(libroprueba.verCatalogo());
+
         } catch (AccesoDatosException e) {
             e.printStackTrace();
         }
