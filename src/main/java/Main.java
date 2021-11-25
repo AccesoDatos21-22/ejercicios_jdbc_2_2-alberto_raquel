@@ -5,6 +5,7 @@ import org.iesinfantaelena.modelo.Libro;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
@@ -39,6 +40,9 @@ public class Main {
 
             System.out.println(Arrays.toString(libroprueba.getCamposLibro()));
             libroprueba.verCatalogoInverso();
+
+
+            HashMap<Integer, Integer> libroshashmap = new HashMap<Integer, Integer>();
 
 
         } catch (AccesoDatosException e) {
