@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -38,11 +39,17 @@ public class Main {
             //libroprueba.librosporEditorial("Éditions Gallimard");
             //libroprueba.actualizarCopias(libro1);
 
+            //Probando el ejercicio 1
+            System.out.println("Ejercicio 1 -->");
             System.out.println(Arrays.toString(libroprueba.getCamposLibro()));
             libroprueba.verCatalogoInverso();
 
+            //Probando el ejercicio 2
+            System.out.println("Ejercicio 2 -->");
+            HashMap<Integer, Integer> actCopias = new HashMap<>();
+            actCopias.put(1111, 5000);
+            libroprueba.actualizarCopias(actCopias);
 
-            HashMap<Integer, Integer> libroshashmap = new HashMap<Integer, Integer>();
 
 
         } catch (AccesoDatosException e) {
