@@ -51,6 +51,11 @@ public class Main {
             libroprueba.actualizarCopias(actCopias);
 
 
+            //Probando el ejercicio 3
+            System.out.println("Ejercicio 3 -->");
+            int[]filas = {1,2};
+            libroprueba.verCatalogo(filas);
+
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();

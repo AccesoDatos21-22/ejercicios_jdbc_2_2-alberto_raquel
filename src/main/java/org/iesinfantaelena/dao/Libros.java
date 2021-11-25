@@ -518,5 +518,58 @@ public class Libros {
         }
     }
 
+    /**
+     * Añade un método a la clase Libros que reciba un listado con números de filas a mostrar utilizando cursores.
+     *
+     *  public void verCatalogo(int[] filas) throws AccesoDatosException;
+     *
+     * Los números no tienen por qué ser consecutivos ni estar ordenados. Resuélvelo con la consulta SELECT_LIBROS_QUERY utilizando un ResultSet adecuado y sus métodos.
+     * Prueba que funciona el nuevo método en la clase con la función main.
+     */
+
+    public void verCatalogo(int[] filas) throws AccesoDatosException{
+
+        stmt = null;
+        pstmt = null;
+
+        try{
+
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+            System.out.println("Listado de libros: ");
+
+            for(int i = 0; i < filas.length; i++){
+                if(rs.absolute(filas[i])){
+                    int isbn = rs.getInt("isbn");
+                    String titulo = rs.getString("titulo");
+                    String autor = rs.getString("autor");
+                    String editorial = rs.getString("editorial");
+                    int paginas = rs.getInt("paginas");
+                    int copias = rs.getInt("copias");
+
+                    System.out.println("ISBN: " + isbn + " Título: " + titulo + " Autor: " + autor + " Editorial: " + editorial + " Páginas: " + paginas + " Copias: " + copias);
+                }
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
+}
 }
 
