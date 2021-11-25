@@ -520,22 +520,3 @@ public class Libros {
 
 }
 
-/**
- * try{
- *             stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
- *             rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
- *
- *             while (rs.next()){
- *                 if(copias.containsKey(rs.getInt("isbn"))){
- *                     int total = rs.getInt("copias") + copias.get(rs.getInt("isbn"));
- *                     rs.updateInt("copias", total);
- *                     rs.updateRow();
- *                 }
- *             }
- *         } catch(SQLException sqle){
- *             Utilidades.printSQLException(sqle);
- *         } finally {
- *             liberar();
- *         }
- *     }
- */
