@@ -8,6 +8,7 @@ public class Libro {
     private String editorial ;
     private int paginas ;
     private int copias ;
+    private double precio ;
 
     public Libro() {
 
@@ -20,6 +21,16 @@ public class Libro {
         this.editorial = editorial;
         this.paginas = paginas;
         this.copias = copias;
+    }
+
+    public Libro(int ISBN,String titulo, String autor, String editorial, int paginas, int copias, double precio) {
+        this.ISBN = ISBN;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.editorial = editorial;
+        this.paginas = paginas;
+        this.copias = copias;
+        this.precio = precio;
     }
 
     public int getISBN() {
@@ -68,6 +79,14 @@ public class Libro {
 
     public void setCopias(int copias) {
         this.copias = copias;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
 
     @Override

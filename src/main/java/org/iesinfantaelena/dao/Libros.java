@@ -32,12 +32,13 @@ public class Libros {
     private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
     private static final String CREATE_LIBROS=" create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
             "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
-
     private static final String INSERT_LIBRO_QUERY="INSERT INTO libros VALUES (?,?,?,?,?,?)";
     private static final String SEARCH_LIBROS_EDITORIAL = "SELECT * FROM libros WHERE libros.editorial= ?";
     private static final String VER_CATALOGO = "SELECT * FROM libros";
     private static final String ACTUALIZAR_COPIAS = "UPDATE libros SET copias=100 WHERE libros.isbn = ?";
     private static final String BORRAR_LIBRO = "DELETE from libros WHERE libros.titulo = ?";
+    private static final String INSERT_COLUMNA_PRECIO = "ALTER TABLE libros ADD precio double";
+
 
     /**
      * Constructor: inicializa conexión
@@ -571,5 +572,55 @@ public class Libros {
             }
         }
 }
+
+/**
+ * Añade un nuevo campo precio a la tabla Libros. Añade un nuevo método a la clase Libros
+ * llamado rellenaPrecio(float precio) throws AccesoDatosException. Este método debe consultar las páginas de cada libro,
+ * multiplicar por el precio por página y rellenar la columna precio de cada libro. Resuélvelo con la consulta
+ * SELECT_LIBROS_QUERY utilizando un ResultSet adecuado, cursores y sus métodos.
+ * Prueba que funciona el nuevo método en la clase con la función main.
+ */
+
+    public void rellenaPrecio(float precio) throws AccesoDatosException{
+
+        stmt = null;
+        pstmt = null;
+
+        Libro lb = new Libro();
+      try{
+              stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+              stmt.executeUpdate(INSERT_COLUMNA_PRECIO);
+              rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+              while (rs.next()){
+                  double precioTotal = (rs.getInt("paginas") * precio);
+                  rs.updateDouble("precio", precioTotal);
+                  rs.updateRow();
+                  lb.setPrecio(precioTotal);
+                  System.out.println(lb.getPrecio());
+              }
+
+          System.out.println();
+      } catch (SQLException sqle) {
+        // En una aplicación real, escribo en el log y delego
+        Utilidades.printSQLException(sqle);
+        throw new AccesoDatosException(
+                "Ocurrió un error al acceder a los datos");
+    } finally {
+        try {
+            // Liberamos todos los recursos pase lo que pase
+            if (stmt != null) {
+                stmt.close();
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log, no delego porque
+            // es error al liberar recursos
+            Utilidades.printSQLException(sqle);
+        }
+    }
+    }
+
+
 }
 
