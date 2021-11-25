@@ -7,6 +7,7 @@ import org.iesinfantaelena.utils.Utilidades;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -469,4 +470,72 @@ public class Libros {
 
     }
 
+    /**
+     * Añade un nuevo método actualizarCopias de la clase Libros. Esta nueva versión recibe un Hashmap que contiene
+     * el nuevo número de copias para cada isbn.
+     *
+     *  public void actualizarCopias(HashMap<Integer, Integer> copias);
+     *
+     * Este nuevo número de copias se lo tienes que sumar al actual. Resuélvelo con la consulta SELECT_LIBROS_QUERY utilizando un tipo de ResultSet adecuado.
+     * Prueba que funciona el nuevo método en la clase con la función main.
+     */
+
+    public void actualizarCopias(HashMap<Integer, Integer> copias) throws AccesoDatosException {
+        stmt = null;
+        pstmt=null;
+
+        Libro lb = new Libro();
+        try {
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+              rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+             while (rs.next()){
+                  if(copias.containsKey(rs.getInt("isbn"))){
+                      int total = rs.getInt("copias") + copias.get(rs.getInt("isbn"));
+                     rs.updateInt("copias", total);
+                     rs.updateRow();
+                     lb.setCopias(total);
+                  }
+              }
+            System.out.println("Las copias han sido actualizadas. Total actual: " + lb.getCopias());
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
+    }
+
 }
+
+/**
+ * try{
+ *             stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+ *             rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+ *
+ *             while (rs.next()){
+ *                 if(copias.containsKey(rs.getInt("isbn"))){
+ *                     int total = rs.getInt("copias") + copias.get(rs.getInt("isbn"));
+ *                     rs.updateInt("copias", total);
+ *                     rs.updateRow();
+ *                 }
+ *             }
+ *         } catch(SQLException sqle){
+ *             Utilidades.printSQLException(sqle);
+ *         } finally {
+ *             liberar();
+ *         }
+ *     }
+ */

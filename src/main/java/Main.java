@@ -3,9 +3,7 @@ import org.iesinfantaelena.dao.Libros;
 import org.iesinfantaelena.modelo.AccesoDatosException;
 import org.iesinfantaelena.modelo.Libro;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
@@ -37,9 +35,16 @@ public class Main {
             //libroprueba.librosporEditorial("Éditions Gallimard");
             //libroprueba.actualizarCopias(libro1);
 
+            //Probando el ejercicio 1
+            System.out.println("Ejercicio 1 -->");
             System.out.println(Arrays.toString(libroprueba.getCamposLibro()));
             libroprueba.verCatalogoInverso();
 
+            //Probando el ejercicio 2
+            System.out.println("Ejercicio 2 -->");
+            HashMap<Integer, Integer> actCopias = new HashMap<>();
+            actCopias.put(1111, 5000);
+            libroprueba.actualizarCopias(actCopias);
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();
