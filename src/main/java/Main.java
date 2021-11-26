@@ -1,6 +1,7 @@
 import org.iesinfantaelena.dao.Cafes;
 import org.iesinfantaelena.dao.Libros;
 import org.iesinfantaelena.modelo.AccesoDatosException;
+import org.iesinfantaelena.modelo.Cafe;
 import org.iesinfantaelena.modelo.Libro;
 
 import java.util.ArrayList;
@@ -17,12 +18,12 @@ public class Main {
         try {
             Cafes cafes = new Cafes();
             cafes.insertar("Cafetito", 150, 1.0f, 100,1000);
-            cafes.insertar("Cafe tacilla", 150, 2.0f, 100,1000);
+            cafes.insertar("Tacilla", 150, 2.0f, 100,1000);
             cafes.verTabla();
-            cafes.buscar("tacilla");
-            cafes.cafesPorProveedor(150);
-            cafes.borrar("Cafe tacilla");
-            cafes.verTabla();
+            //cafes.buscar("tacilla");
+            //cafes.cafesPorProveedor(150);
+            //cafes.borrar("Cafe tacilla");
+            //cafes.verTabla();
 
             Libros libroprueba = new Libros();
             Libro libro1 = new Libro(1111,"El principito","Antoine de Saint-Exupéry","Éditions Gallimard",100,6000000);
@@ -76,6 +77,11 @@ public class Main {
             System.out.println("Ejercicio 7 -->");
             libroprueba.copiaLibro(1111,3333);
             System.out.println(libroprueba.verCatalogo());
+
+            //Probando el ejercicio 8
+            System.out.println("Ejercicio 8 -->");
+            cafes.transferencia("Cafetito", "Tacilla");
+            cafes.verTabla();
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();

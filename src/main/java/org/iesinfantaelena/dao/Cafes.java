@@ -358,4 +358,80 @@ public class Cafes {
 
     }
 
+
+    /**
+     * Añade un método a la clase Cafes.java llamado transferencia que reciba 2 nombres de café.
+     *
+     * public void transferencia(String cafe1, String cafe2)
+     *      throws AccesoDatosException {
+     *    }
+     *
+     * El método realiza lo siguiente utilizando cursores:
+     * a.       Consulta las ventas del primer café
+     * b.      Suma a las ventas del segundo café las del primero
+     * c.       Pone a 0 las ventas del primer café
+     * d.      Las 3 operaciones tienen que ser una transacción
+     * Prueba que funciona el nuevo método en la clase con la función main
+     */
+
+    public void transferencia(String cafe1, String cafe2) throws AccesoDatosException {
+
+    try{
+
+        connection.setAutoCommit(false);
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+        rs = stmt.executeQuery(SELECT_CAFES_QUERY);
+
+        int ventas = 0;
+
+        //Consultar las ventas del primer cafe
+        while(rs.next()){
+            if(rs.getString("CAF_NOMBRE").equals(cafe1)){
+                ventas = rs.getInt("ventas");
+            }
+        }
+
+        rs.beforeFirst();
+
+        //Suma a las ventas del segundo café las del primero
+        while(rs.next()){
+            if(rs.getString("CAF_NOMBRE").equals(cafe2)){
+                rs.updateInt("ventas", rs.getInt("ventas")+ventas);
+                rs.updateRow();
+            }
+        }
+
+        rs.beforeFirst();
+
+        //Pone a 0 las ventas del primer café
+        while(rs.next()){
+            if(rs.getString("CAF_NOMBRE").equals(cafe1)){
+                rs.updateInt("ventas", 0);
+                rs.updateRow();
+            }
+        }
+
+        connection.commit();
+
+    }catch (SQLException sqle) {
+        // En una aplicación real, escribo en el log y delego
+        Utilidades.printSQLException(sqle);
+        throw new AccesoDatosException(
+                "Ocurrió un error al acceder a los datos");
+    } finally {
+        try {
+            // Liberamos todos los recursos pase lo que pase
+            if (stmt != null) {
+                stmt.close();
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log, no delego porque
+            // es error al liberar recursos
+            Utilidades.printSQLException(sqle);
+        }
+    }
+
+    }
+
 }
