@@ -26,13 +26,13 @@ public class Libros {
     // Consultas a realizar en BD
     private static final String SELECT_LIBROS_QUERY = "select * from libros";
     private static final String SEARCH_LIBROS_QUERY = "select * from libros WHERE isbn= ?";
-    private static final String INSERT_LIBROS_QUERY = "insert into libros values (?,?,?,?,?,?)";
+    private static final String INSERT_LIBROS_QUERY = "insert into libros values (?,?,?,?,?,?,?)";
     private static final String DELETE_LIBROS_QUERY = "delete from libros WHERE isbn = ?";
     private static final String CREATE_TABLE_LIBROS ="create table if not exists libros (   isbn integer not null,titulo varchar(50) not null,autor varchar(50) not null,editorial varchar(25) not null,paginas integer not null,copias integer not null,constraint isbn_pk primary key (isbn));";
     private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
     private static final String CREATE_LIBROS=" create table libros (isbn integer not null, titulo varchar(50) not null, autor varchar(50) not null, " +
-            "editorial varchar(25) not null, paginas integer not null, copias integer not null, constraint isbn_pk primary key (isbn));";
-    private static final String INSERT_LIBRO_QUERY="INSERT INTO libros VALUES (?,?,?,?,?,?)";
+            "editorial varchar(25) not null, paginas integer not null, copias integer not null, precio double, constraint isbn_pk primary key (isbn));";
+    private static final String INSERT_LIBRO_QUERY="INSERT INTO libros VALUES (?,?,?,?,?,?,?)";
     private static final String SEARCH_LIBROS_EDITORIAL = "SELECT * FROM libros WHERE libros.editorial= ?";
     private static final String VER_CATALOGO = "SELECT * FROM libros";
     private static final String ACTUALIZAR_COPIAS = "UPDATE libros SET copias=100 WHERE libros.isbn = ?";
@@ -142,8 +142,9 @@ public class Libros {
                 String editorial = rs.getString("editorial");
                 int paginas = rs.getInt("paginas");
                 int copias = rs.getInt("copias");
+                double precio = rs.getDouble("precio");
 
-                listalibros.add(new Libro(isbn,titulo,autor,editorial,paginas,copias));
+                listalibros.add(new Libro(isbn,titulo,autor,editorial,paginas,copias, precio));
             }
             return listalibros;
 
@@ -214,6 +215,7 @@ public class Libros {
             pstmt.setString(4,libro.getEditorial());
             pstmt.setInt(5,libro.getPaginas());
             pstmt.setInt(6,libro.getCopias());
+            pstmt.setDouble(7, libro.getPrecio());
             pstmt.executeUpdate();
 
         } catch (SQLException sqle) {
@@ -589,7 +591,7 @@ public class Libros {
         Libro lb = new Libro();
       try{
               stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-              stmt.executeUpdate(INSERT_COLUMNA_PRECIO);
+              //stmt.executeUpdate(INSERT_COLUMNA_PRECIO);
               rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
 
               while (rs.next()){
@@ -752,5 +754,64 @@ public class Libros {
     }
     }
 
+    /**
+     * Añade un nuevo método a la clase libros que reciba dos isbn y realice lo siguiente utilizando cursores:
+     *   public void copiaLibro(int isbn1, int isbn2) throws AccesoDatosException {
+     *
+     * a.       Consultará los datos del primer isbn
+     * b.      Insertará una nueva fila con el segundo isbn copiando el resto de datos de los obtenidos en la consulta anterior.
+     * c.       Debes resolverlo utilizando sólo la consulta del primer isbn y un resultset de tipo adecuado.
+     */
+
+    public void copiaLibro(int isbn1, int isbn2) throws AccesoDatosException{
+
+        stmt = null;
+        pstmt = null;
+
+        try{
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+            while(rs.next()){
+
+                if(rs.getInt("isbn") == isbn1){
+                    String titulo = rs.getString("titulo");
+                    String autor = rs.getString("autor");
+                    String editorial = rs.getString("editorial");
+                    int paginas = rs.getInt("paginas");
+                    int copias = rs.getInt("copias");
+                    double precio = rs.getDouble("precio");
+
+                    rs.moveToInsertRow();
+                    rs.updateInt("isbn", isbn2);
+                    rs.updateString("titulo", titulo);
+                    rs.updateString("autor", autor);
+                    rs.updateString("editorial", editorial);
+                    rs.updateInt("paginas", paginas);
+                    rs.updateInt("copias", copias);
+                    rs.updateDouble("precio", precio);
+
+                    rs.insertRow();
+                }
+            }
+        }catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+        } finally {
+            try {
+                // Liberamos todos los recursos pase lo que pase
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+            } catch (SQLException sqle) {
+                // En una aplicación real, escribo en el log, no delego porque
+                // es error al liberar recursos
+                Utilidades.printSQLException(sqle);
+            }
+        }
+        }
 }
 

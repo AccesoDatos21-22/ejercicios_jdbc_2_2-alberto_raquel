@@ -72,11 +72,16 @@ public class Main {
             libroprueba.actualizaPrecio2(1111, 0.20f,  350);
             System.out.println(libroprueba.verCatalogo());
 
+            //Probando el ejercicio 7
+            System.out.println("Ejercicio 7 -->");
+            libroprueba.copiaLibro(1111,3333);
+            System.out.println(libroprueba.verCatalogo());
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();
         }
     }
+
 
 
 }
