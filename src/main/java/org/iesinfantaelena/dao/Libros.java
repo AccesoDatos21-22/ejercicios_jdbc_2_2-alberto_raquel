@@ -689,5 +689,68 @@ public class Libros {
 
 }
 
+/**
+ * Añade un nuevo método a la clase libros que reciba un isbn, un float que indica el precio por página y un número de páginas.
+ *
+ * public void actualizaPrecio(int isbn, float precio,  int paginas) throws AccesoDatosException;
+ *
+ *  este método realizará lo siguiente utilizando cursores:
+ *
+ *
+ * a.       Sumará el número de páginas a las páginas actuales que ya tiene el libro
+ * b.      Calcula el precio multiplicando el total de páginas por el precio por página
+ * c.       Actualiza el precio del libro
+ * d.      Las 2 operaciones de actualización ser una transacción
+ * e.       Resuélvelo utilizando ResultSet.CONCUR_UPDATABLE
+ * Prueba que funciona el nuevo método en la clase con la función main
+ * Fíjate bien lo sencillo que resulta realizar una transacción con .CONCUR_UPDATABLE cuando los cambios afectan al mismo ResultSet.
+ */
+
+
+    public void actualizaPrecio2(int isbn, float precio,  int paginas) throws AccesoDatosException{
+
+    stmt = null;
+    pstmt = null;
+        try{
+
+            con.setAutoCommit(false);
+            stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            rs = stmt.executeQuery(SELECT_LIBROS_QUERY);
+
+            while (rs.next()){
+
+                if(rs.getInt("isbn") == isbn){
+                    int totalPaginas = rs.getInt("paginas") + paginas;
+                    rs.updateInt("paginas", totalPaginas);
+                    rs.updateRow();
+
+                    double nuevoPrecio = rs.getInt("paginas") * precio;
+                    rs.updateDouble("precio", nuevoPrecio);
+                    rs.updateRow();
+                }
+            }
+
+            con.commit();
+
+    } catch (SQLException sqle) {
+        // En una aplicación real, escribo en el log y delego
+        Utilidades.printSQLException(sqle);
+        throw new AccesoDatosException(
+                "Ocurrió un error al acceder a los datos");
+    } finally {
+        try {
+            // Liberamos todos los recursos pase lo que pase
+            if (stmt != null) {
+                stmt.close();
+            }
+
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log, no delego porque
+            // es error al liberar recursos
+            Utilidades.printSQLException(sqle);
+        }
+    }
+    }
+
 }
 
